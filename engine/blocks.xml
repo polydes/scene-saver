@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<blocks>
+	
+	<block
+		tag="save-modified-tiles"
+		spec="save modified tiles for this scene"
+		code='com.polydes.scenesaver.SceneSaver.saveModifiedTilesForCurrentScene();'
+		type="action"
+		color="gray"
+		returns="void">
+	</block>
+
+</blocks>
