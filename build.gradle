@@ -47,7 +47,7 @@ jar {
 			"Extension-Name": "Engine Scene Saver",
 			"Extension-Description": "Save a scene from the engine.",
 			"Extension-Author": "Justin Espedal",
-			"Extension-Website": "http://www.polydes.com",
+			"Extension-Website": "http://www.polydes.com/repo/toolset/com.polydes.scenesaver",
 			"Extension-Repository": "http://www.polydes.com/repo",
 			"Extension-Internal-Version": "1"
 		)

@@ -1,7 +1,7 @@
 name=Engine Scene Saver
 description=Save scenes from the engine
 author=Justin Espedal
-website=http://www.polydes.com/
+website=http://www.polydes.com/repo/engine/com.polydes.scenesaver
 version=0.0.1
 compatibility=all
 dependencies=toolset-com.polydes.scenesaver-0.0.1,stencyl-4.1.0
