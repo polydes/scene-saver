@@ -57,6 +57,12 @@ public class SceneSaverExtension extends BaseExtension implements ClientConnecti
 	{
 		SW.get().getGameInterfaceServer().addConnectionsListener(this);
 	}
+	
+	@Override
+	public void onGameClosed(Game game)
+	{
+		SW.get().getGameInterfaceServer().removeConnectionsListener(this);
+	}
 
 	@Override
 	public void onGameSave(Game game)
