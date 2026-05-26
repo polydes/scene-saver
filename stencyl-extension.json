@@ -1,0 +1,30 @@
+{
+  "group": "com.polydes",
+  "id": "com.polydes.scenesaver",
+  "name": "Engine Scene Saver",
+  "description": "Save a scene from the engine.",
+  "tags": ["workflow"],
+  "type": "normal",
+  "author": "Justin Espedal",
+  "repository": "https://www.polydes.com/repo",
+  "website": "https://www.polydes.com/repo/toolset/com.polydes.scenesaver",
+  "target": "stencyl-4.2.0",
+  "version": "0.1.0",
+
+  "icon": "icon.png",
+
+  "toolset": {
+    "root": "toolset",
+    "mainClass": "com.polydes.scenesaver.SceneSaverExtension",
+    "dependencies": [
+      "platform:commons-io:commons-io",
+      "platform:log4j:log4j"
+    ],
+    "internalVersion": "1"
+  },
+
+  "engine": {
+    "root": "engine",
+    "compatibility": "all"
+  }
+}
