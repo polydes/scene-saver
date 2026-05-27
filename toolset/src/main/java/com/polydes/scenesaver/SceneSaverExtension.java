@@ -4,119 +4,60 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import stencyl.app.doc.IWorkspace;
+import stencyl.core.SWC;
+import stencyl.core.ext.GameExtension;
+import stencyl.core.ext.engine.ExtensionInstanceManager.FormatUpdateSubmitter;
+import stencyl.core.util.ParsingHelper;
+import stencyl.sw.app.editors.scene.Designer;
+import stencyl.sw.app.editors.scene.EditorSceneModel;
+import stencyl.sw.app.editors.scene.SceneTab;
+import stencyl.sw.core.gamesession.controller.GCIClient;
+import stencyl.sw.core.gamesession.controller.GCIClient.GamePacketListener;
+import stencyl.sw.core.gamesession.controller.GameInterfaceServer;
+import stencyl.sw.core.gamesession.controller.GameInterfaceServer.ClientConnectionListener;
+import stencyl.sw.core.gamesession.controller.SocketDataParser.Packet;
+import stencyl.sw.core.lib.game.Game;
+import stencyl.sw.core.lib.game.GameLocations;
+import stencyl.sw.core.lib.scene.*;
 
-import stencyl.core.lib.Game;
-import stencyl.core.lib.io.read.SceneReader;
-import stencyl.core.lib.scene.SceneModel;
-import stencyl.core.lib.scene.Terrain;
-import stencyl.core.lib.scene.TerrainLayer;
-import stencyl.core.lib.scene.TileData;
-import stencyl.sw.SW;
-import stencyl.sw.app.gamecontroller.GameInterfaceServer.ClientConnectionListener;
-import stencyl.sw.app.gamecontroller.GameInterfaceServer.GamePacketListener;
-import stencyl.sw.app.gamecontroller.SocketDataParser.Packet;
-import stencyl.sw.editors.scene.Designer;
-import stencyl.sw.editors.scene.EditorSceneModel;
-import stencyl.sw.editors.scene.SceneTab;
-import stencyl.sw.ext.BaseExtension;
-import stencyl.sw.ext.OptionsPanel;
-import stencyl.sw.prefs.runconfigs.BuildConfig;
-import stencyl.sw.util.Locations;
-import stencyl.sw.util.Util;
-
-public class SceneSaverExtension extends BaseExtension implements ClientConnectionListener, GamePacketListener
+public class SceneSaverExtension extends GameExtension implements ClientConnectionListener, GamePacketListener
 {
 	private static final Logger log = Logger.getLogger(SceneSaverExtension.class);
-	
+
 	@Override
-	public void onStartup()
-	{
-		super.onStartup();
-		
-//		isInMenu = false;
-//		menuName = "Engine Scene Saver";
-//		
-//		isInGameCenter = false;
-//		gameCenterName = "Engine Scene Saver";
+	protected void onLoad() {
+		SWC.get(GameInterfaceServer.class).addConnectionsListener(this);
 	}
 
 	@Override
-	public void onActivate()
-	{
-		
+	protected void onUnload() {
+		SWC.get(GameInterfaceServer.class).removeConnectionsListener(this);
 	}
 
 	@Override
-	public void onGameOpened(Game game)
-	{
-		SW.get().getGameInterfaceServer().addConnectionsListener(this);
-	}
-	
-	@Override
-	public void onGameClosed(Game game)
-	{
-		SW.get().getGameInterfaceServer().removeConnectionsListener(this);
+	public void clientConnected(GCIClient client) {
+		client.addMessageListener(this);
 	}
 
 	@Override
-	public void onGameSave(Game game)
-	{
-		
+	public void clientDisconnected(GCIClient client) {
+		client.removeMessageListener(this);
 	}
 
-	@Override
-	public void onInstall()
-	{
-		
-	}
-
-	@Override
-	public void onUninstall()
-	{
-		
-	}
-	
-	@Override
-	protected boolean hasOptions()
-	{
-		return false;
-	}
-
-	@Override
-	public OptionsPanel onOptions()
-	{
-		return null;
-	}
-	
-	@Override
-	public void clientConnected(BuildConfig cfg)
-	{
-		SW.get().getGameInterfaceServer().addMessagesListener(cfg, this);
-	}
-	
-	@Override
-	public void clientDisconnected(BuildConfig cfg)
-	{
-		SW.get().getGameInterfaceServer().removeMessagesListener(cfg, this);
-	}
-	
 	@Override
 	public void packetReceived(Packet packet)
 	{
 		if(packet.header.get("Content-Type").equals("com.polydes.scenesaver.scn"))
 		{
-			int sceneID = Util.parseInt(packet.header.get("Scene-Id"), -1);
-			SceneModel scene = Game.getGame().getScene(sceneID);
+			int sceneID = ParsingHelper.parseInt(packet.header.get("Scene-Id"), -1);
+			SceneModel scene = getProject().getResource(SceneModel.class, sceneID);
 			if(scene != null)
 			{
-				String url = Locations.getSceneDataLocation(sceneID);
-				String sceneURL = Locations.getGameLocation(Game.getGame()) + url;
+				File sceneFile = ((GameLocations) getProject().getFiles()).getSceneDataFile(sceneID);
 				
 //				try
 //				{
@@ -134,7 +75,7 @@ public class SceneSaverExtension extends BaseExtension implements ClientConnecti
 				
 				try
 				{
-					FileUtils.writeByteArrayToFile(new File(sceneURL), packet.data);
+					FileUtils.writeByteArrayToFile(sceneFile, packet.data);
 				}
 				catch (IOException e)
 				{
@@ -142,9 +83,9 @@ public class SceneSaverExtension extends BaseExtension implements ClientConnecti
 				}
 			}
 			
-			if(SW.get().getWorkspace().isResourceOpen(scene))
+			if(SWC.get(IWorkspace.class).isResourceOpen(scene))
 			{
-				var editor = SW.get().getWorkspace().getDocumentForResource(scene).getResourceEditor();
+				var editor = SWC.get(IWorkspace.class).getDocumentForResource(scene).getResourceEditor();
 				SceneTab sceneTab = (SceneTab) editor.getEditorComponent();
 				Designer designer = sceneTab.getCanvas();
 				EditorSceneModel editorModel = designer.getModel();
@@ -156,7 +97,7 @@ public class SceneSaverExtension extends BaseExtension implements ClientConnecti
 				{
 					Method readData = SceneReader.class.getDeclaredMethod("readData", Game.class, SceneModel.class);
 					readData.setAccessible(true);
-					terrain = (Terrain) readData.invoke(null, Game.getGame(), model);
+					terrain = (Terrain) readData.invoke(null, (Game) getProject(), model);
 				}
 				catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
 				{
@@ -189,5 +130,10 @@ public class SceneSaverExtension extends BaseExtension implements ClientConnecti
 				designer.repaint();
 			}
 		}
+	}
+
+	@Override
+	public void updateFromVersion(int fromVersion, FormatUpdateSubmitter formatUpdateQueue) {
+
 	}
 }
