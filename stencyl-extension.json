@@ -4,7 +4,7 @@
   "name": "Engine Scene Saver",
   "description": "Save a scene from the engine.",
   "tags": ["workflow"],
-  "type": "normal",
+  "type": "game",
   "author": "Justin Espedal",
   "repository": "https://www.polydes.com/repo",
   "website": "https://www.polydes.com/repo/toolset/com.polydes.scenesaver",
