@@ -7,7 +7,7 @@
   "type": "game",
   "author": "Justin Espedal",
   "repository": "https://www.polydes.com/repo",
-  "website": "https://www.polydes.com/repo/toolset/com.polydes.scenesaver",
+  "website": "https://www.polydes.com/repo/extensions/com.polydes.scenesaver",
   "target": "stencyl-4.2.0",
   "version": "0.1.0",
 
