@@ -1,11 +1,11 @@
 package com.polydes.scenesaver;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import stencyl.app.doc.IWorkspace;
 import stencyl.core.SWC;
@@ -57,7 +57,7 @@ public class SceneSaverExtension extends GameExtension implements ClientConnecti
 			SceneModel scene = getProject().getResource(SceneModel.class, sceneID);
 			if(scene != null)
 			{
-				File sceneFile = ((GameLocations) getProject().getFiles()).getSceneDataFile(sceneID);
+				Path sceneFile = ((GameLocations) getProject().getFiles()).getSceneDataFile(sceneID);
 				
 //				try
 //				{
@@ -75,7 +75,7 @@ public class SceneSaverExtension extends GameExtension implements ClientConnecti
 				
 				try
 				{
-					FileUtils.writeByteArrayToFile(sceneFile, packet.data);
+					Files.write(sceneFile, packet.data);
 				}
 				catch (IOException e)
 				{
