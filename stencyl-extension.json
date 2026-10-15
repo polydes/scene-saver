@@ -18,7 +18,7 @@
     "mainClass": "com.polydes.scenesaver.SceneSaverExtension",
     "dependencies": [
       "platform:commons-io:commons-io",
-      "platform:log4j:log4j"
+      "platform:ch.qos.reload4j:reload4j"
     ],
     "internalVersion": "1"
   },
