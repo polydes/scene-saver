@@ -8,8 +8,8 @@
   "author": "Justin Espedal",
   "repository": "https://www.polydes.com/repo",
   "website": "https://www.polydes.com/repo/extensions/com.polydes.scenesaver",
-  "target": "stencyl-4.2.0",
-  "version": "0.1.0",
+  "target": "stencyl-4.3.0",
+  "version": "0.2.0",
 
   "icon": "icon.png",
 
